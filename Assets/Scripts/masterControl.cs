@@ -259,11 +259,13 @@ public class masterControl : MonoBehaviour {
     speakerDeviceInterface[] standaloneSpeakers = FindObjectsOfType<speakerDeviceInterface>();
     for (int i = 0; i < standaloneSpeakers.Length; i++) {
       if (BinauralSetting == BinauralMode.None) standaloneSpeakers[i].audio.spatialize = false;
-      else standaloneSpeakers[i].audio.spatialize = true;
+      //else standaloneSpeakers[i].audio.spatialize = true;
+      else standaloneSpeakers[i].audio.spatialize = false;
     }
     embeddedSpeaker[] embeddedSpeakers = FindObjectsOfType<embeddedSpeaker>();
     for (int i = 0; i < embeddedSpeakers.Length; i++) {
-      if (BinauralSetting == BinauralMode.All) embeddedSpeakers[i].audio.spatialize = true;
+      //if (BinauralSetting == BinauralMode.All) embeddedSpeakers[i].audio.spatialize = true;
+      if (BinauralSetting == BinauralMode.All) embeddedSpeakers[i].audio.spatialize = false;
       else embeddedSpeakers[i].audio.spatialize = false;
     }
   }

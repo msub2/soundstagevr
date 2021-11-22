@@ -19,10 +19,10 @@ using System.Runtime.InteropServices;
 public class reverbSignalGenerator : signalGenerator {
   public signalGenerator incoming;
 
-  [DllImport("SoundStageNative")] public static extern void SetArrayToSingleValue(float[] a, int length, float val);
-  [DllImport("SoundStageNative")] public static extern void DuplicateArrayAndReset(float[] from, float[] to, int length, float val);
-  [DllImport("SoundStageNative")] public static extern void lowpassSignal(float[] buffer, int length, ref float lowpassL, ref float lowpassR);
-  [DllImport("SoundStageNative")] public static extern void combineArrays(float[] buffer, float[] bufferB, int length, float levelA, float levelB);
+  //[DllImport("__Internal")] public static extern void SetArrayToSingleValue(float[] a, int length, float val);
+  //[DllImport("__Internal")] public static extern void DuplicateArrayAndReset(float[] from, float[] to, int length, float val);
+  //[DllImport("__Internal")] public static extern void lowpassSignal(float[] buffer, int length, ref float lowpassL, ref float lowpassR);
+  //[DllImport("__Internal")] public static extern void combineArrays(float[] buffer, float[] bufferB, int length, float levelA, float levelB);
 
   public float decayTime = 1.0f;
 
@@ -62,7 +62,7 @@ public class reverbSignalGenerator : signalGenerator {
   float lowpassR = 0;
   public override void processBuffer(float[] buffer, double dspTime, int channels) {
     if (!incoming) {
-      SetArrayToSingleValue(buffer, buffer.Length, 0);
+      SoundStageNative.SetArrayToSingleValue(buffer, buffer.Length, 0);
       return;
     }
 
@@ -71,17 +71,17 @@ public class reverbSignalGenerator : signalGenerator {
     if (bufferCopy.Length != buffer.Length)
       System.Array.Resize(ref bufferCopy, buffer.Length);
 
-    DuplicateArrayAndReset(buffer, bufferCopy, buffer.Length, .4f);
+    SoundStageNative.DuplicateArrayAndReset(buffer, bufferCopy, buffer.Length, .4f);
 
 
     for (int i = 0; i < 6; i++) cf[i].addSignal(bufferCopy, buffer, buffer.Length);
     for (int i = 6; i < 9; i++) cf[i].processSignal(buffer, buffer.Length);
 
-    lowpassSignal(buffer, buffer.Length, ref lowpassL, ref lowpassR);
+    SoundStageNative.lowpassSignal(buffer, buffer.Length, ref lowpassL, ref lowpassR);
 
     for (int i = 9; i < 11; i++) cf[i].processSignal(buffer, buffer.Length);
 
-    combineArrays(buffer, bufferCopy, buffer.Length, sendLevel, 1);
+    SoundStageNative.combineArrays(buffer, bufferCopy, buffer.Length, sendLevel, 1);
 
   }
 }
@@ -94,10 +94,10 @@ public class CombFilter {
   int inPoint;
   int outPoint;
 
-  [DllImport("SoundStageNative")]
-  public static extern void addCombFilterSignal(float[] inputbuffer, float[] addbuffer, int length, float[] delayBufferL, float[] delayBufferR, int delaylength, float gain, ref int inPoint, ref int outPoint);
-  [DllImport("SoundStageNative")]
-  public static extern void processCombFilterSignal(float[] buffer, int length, float[] delayBufferL, float[] delayBufferR, int delaylength, float gain, ref int inPoint, ref int outPoint);
+  //[DllImport("__Internal")]
+  //public static extern void addCombFilterSignal(float[] inputbuffer, float[] addbuffer, int length, float[] delayBufferL, float[] delayBufferR, int delaylength, float gain, ref int inPoint, ref int outPoint);
+  //[DllImport("__Internal")]
+  //public static extern void processCombFilterSignal(float[] buffer, int length, float[] delayBufferL, float[] delayBufferR, int delaylength, float gain, ref int inPoint, ref int outPoint);
 
   public void updateGain(float g) {
     gain = g;
@@ -113,10 +113,10 @@ public class CombFilter {
   }
 
   public void addSignal(float[] inputbuffer, float[] addbuffer, int length) {
-    addCombFilterSignal(inputbuffer, addbuffer, length, delayBufferL, delayBufferR, delayBufferR.Length, gain, ref inPoint, ref outPoint);
+    SoundStageNative.addCombFilterSignal(inputbuffer, addbuffer, length, delayBufferL, delayBufferR, delayBufferR.Length, gain, ref inPoint, ref outPoint);
   }
 
   public void processSignal(float[] buffer, int length) {
-    processCombFilterSignal(buffer, length, delayBufferL, delayBufferR, delayBufferR.Length, gain, ref inPoint, ref outPoint);
+    SoundStageNative.processCombFilterSignal(buffer, length, delayBufferL, delayBufferR, delayBufferR.Length, gain, ref inPoint, ref outPoint);
   }
 }

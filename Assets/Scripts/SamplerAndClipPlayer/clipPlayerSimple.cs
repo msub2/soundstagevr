@@ -29,9 +29,9 @@ public class clipPlayerSimple : clipPlayer {
   float _lastBuffer = 0;
   float[] lastSeqGen;
 
-  [DllImport("SoundStageNative")]
-  public static extern float ClipSignalGenerator(float[] buffer, float[] speedBuffer, float[] ampBuffer, float[] seqBuffer, int length, float[] lastSeqGen, int channels, bool speedGen, bool ampGen, bool seqGen, float floatingBufferCount
-     , int[] sampleBounds, float playbackSpeed, System.IntPtr clip, int clipChannels, float amplitude, bool playdirection, bool looping, double _sampleDuration, int bufferCount, ref bool active);
+  //[DllImport("__Internal")]
+  //public static extern float ClipSignalGenerator(float[] buffer, float[] speedBuffer, float[] ampBuffer, float[] seqBuffer, int length, float[] lastSeqGen, int channels, bool speedGen, bool ampGen, bool seqGen, float floatingBufferCount
+  //   , int[] sampleBounds, float playbackSpeed, System.IntPtr clip, int clipChannels, float amplitude, bool playdirection, bool looping, double _sampleDuration, int bufferCount, ref bool active);
 
   float[] speedBuffer = new float[0];
   float[] ampBuffer = new float[0];
@@ -50,7 +50,7 @@ public class clipPlayerSimple : clipPlayer {
     active = false;
   }
 
-  public override void processBuffer(float[] buffer, double dspTime, int channels) {
+  public unsafe override void processBuffer(float[] buffer, double dspTime, int channels) {
     if (!loaded) return;
     floatingBufferCount = _lastBuffer;
 
@@ -58,8 +58,8 @@ public class clipPlayerSimple : clipPlayer {
     if (seqGen != null) seqGen.processBuffer(seqBuffer, dspTime, channels);
 
 
-    floatingBufferCount = ClipSignalGenerator(buffer, speedBuffer, ampBuffer, seqBuffer, buffer.Length, lastSeqGen, channels, false, false, seqGen != null, floatingBufferCount, sampleBounds,
-   playbackSpeed, m_ClipHandle.AddrOfPinnedObject(), clipChannels, amplitude, true, false, _sampleDuration, bufferCount, ref active);
+    floatingBufferCount = SoundStageNative.ClipSignalGenerator(buffer, speedBuffer, ampBuffer, seqBuffer, buffer.Length, lastSeqGen, channels, false, false, seqGen != null, floatingBufferCount, sampleBounds,
+   playbackSpeed, (void*)m_ClipHandle.AddrOfPinnedObject(), clipChannels, amplitude, true, false, _sampleDuration, bufferCount, ref active);
 
     _lastBuffer = floatingBufferCount;
   }

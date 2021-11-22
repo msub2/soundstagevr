@@ -28,8 +28,8 @@ public class midiCC : signalGenerator {
   omniJack jackOut;
   public float curValue = .5f;
 
-  [DllImport("SoundStageNative")]
-  public static extern void SetArrayToSingleValue(float[] a, int length, float val);
+  //[DllImport("__Internal")]
+  //public static extern void SetArrayToSingleValue(float[] a, int length, float val);
 
   public override void Awake() {
     base.Awake();
@@ -73,6 +73,6 @@ public class midiCC : signalGenerator {
   }
 
   public override void processBuffer(float[] buffer, double dspTime, int channels) {
-    SetArrayToSingleValue(buffer, buffer.Length, curValue);
+    SoundStageNative.SetArrayToSingleValue(buffer, buffer.Length, curValue);
   }
 }

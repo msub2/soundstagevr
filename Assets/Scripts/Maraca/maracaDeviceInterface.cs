@@ -22,8 +22,8 @@ public class maracaDeviceInterface : deviceInterface {
   omniJack jackOut;
   double _sampleDuration;
 
-  [DllImport("SoundStageNative")]
-  public static extern void MaracaProcessAudioBuffer(float[] buffer, float[] controlBuffer, int length, int channels, ref double _phase, double _sampleDuration);
+  //[DllImport("__Internal")]
+  //public static extern void MaracaProcessAudioBuffer(float[] buffer, float[] controlBuffer, int length, int channels, ref double _phase, double _sampleDuration);
 
   public override void Awake() {
     base.Awake();
@@ -49,7 +49,7 @@ public class maracaDeviceInterface : deviceInterface {
     float[] b = new float[buffer.Length];
     signal.processBuffer(b, dspTime, channels);
 
-    MaracaProcessAudioBuffer(buffer, b, buffer.Length, channels, ref _phaseB, _sampleDuration);
+    SoundStageNative.MaracaProcessAudioBuffer(buffer, b, buffer.Length, channels, ref _phaseB, _sampleDuration);
   }
 
   public override InstrumentData GetData() {

@@ -125,7 +125,7 @@ public class samplerLoad : MonoBehaviour {
   GameObject loaderObject;
   Coroutine _streamRoutine;
   IEnumerator streamRoutine(string fullpath) {
-    AudioClip c = RuntimeAudioClipLoader.Manager.Load(fullpath, false, true, false);
+    /*AudioClip c = RuntimeAudioClipLoader.Manager.Load(fullpath, false, true, false);
 
     loaderObject = Instantiate(loadingPrefab, transform, false) as GameObject;
     loaderObject.transform.localPosition = new Vector3(-.05f, .013f, 0.061f);
@@ -147,7 +147,8 @@ public class samplerLoad : MonoBehaviour {
 
     //alocate the memory
     m_ClipHandle = GCHandle.Alloc(clipSamples, GCHandleType.Pinned);
-    for (int i = 0; i < players.Length; i++) players[i].LoadSamples(clipSamples, m_ClipHandle, c.channels);
+    for (int i = 0; i < players.Length; i++) players[i].LoadSamples(clipSamples, m_ClipHandle, c.channels);*/
+    yield return null;
   }
 
   void OnDestroy() {

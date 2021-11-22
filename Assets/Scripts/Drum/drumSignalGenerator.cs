@@ -26,8 +26,8 @@ public class drumSignalGenerator : signalGenerator
     int hitdur = 100;
     int counter = 0;
 
-    [DllImport("SoundStageNative", EntryPoint = "DrumSignalGenerator")]
-    public static extern int DrumSignalGenerator(float[] buffer, int length, int channels, bool signalOn, int counter);
+    //[DllImport("__Internal")]
+    //public static extern int DrumSignalGenerator(float[] buffer, int length, int channels, bool signalOn, int counter);
 
     void Start()
     {
@@ -46,7 +46,8 @@ public class drumSignalGenerator : signalGenerator
 
     public override void processBuffer(float[] buffer, double dspTime, int channels)
     {
-        counter = DrumSignalGenerator(buffer, buffer.Length, channels, signalOn, counter);
+        Debug.Log("Processing buffer on drum");
+        counter = SoundStageNative.DrumSignalGenerator(buffer, buffer.Length, channels, signalOn, counter);
         if (counter < 0)
             signalOn = false;
         if (newSignal)

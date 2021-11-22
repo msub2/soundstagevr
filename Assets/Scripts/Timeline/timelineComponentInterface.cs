@@ -20,8 +20,8 @@ using System.Runtime.InteropServices;
 
 public class timelineComponentInterface : componentInterface {
 
-  [DllImport("SoundStageNative")]
-  public static extern int CountPulses(float[] buffer, int length, int channels, float[] lastSig);
+  //[DllImport("__Internal")]
+  //public static extern int CountPulses(float[] buffer, int length, int channels, float[] lastSig);
 
   public deviceInterface _targetDeviceInterface;
   public GameObject tlEventPrefab;
@@ -241,13 +241,13 @@ public class timelineComponentInterface : componentInterface {
 
     if (playSignal != null) {
       playSignal.processBuffer(buffer, dspTime, channels);
-      int hits = CountPulses(buffer, buffer.Length, channels, lastPlaySig);
+      int hits = SoundStageNative.CountPulses(buffer, buffer.Length, channels, lastPlaySig);
       if (hits % 2 == 1) playFromStart();
     }
 
     if (recSignal != null) {
       recSignal.processBuffer(buffer, dspTime, channels);
-      int hits = CountPulses(buffer, buffer.Length, channels, lastRecSig);
+      int hits = SoundStageNative.CountPulses(buffer, buffer.Length, channels, lastRecSig);
       if (hits % 2 == 1) toggleRec();
     }
 

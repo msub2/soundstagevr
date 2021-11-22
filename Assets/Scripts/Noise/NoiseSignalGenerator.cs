@@ -26,8 +26,8 @@ public class NoiseSignalGenerator : signalGenerator {
 
   float curSample = -1.0f;
 
-  [DllImport("SoundStageNative")]
-  public static extern int NoiseProcessBuffer(float[] buffer, ref float sample, int length, int channels, float frequency, int counter, int speedFrames, ref bool updated);
+  //[DllImport("__Internal")]
+  //public static extern int NoiseProcessBuffer(float[] buffer, ref float sample, int length, int channels, float frequency, int counter, int speedFrames, ref bool updated);
 
   public bool updated = false;
 
@@ -38,6 +38,6 @@ public class NoiseSignalGenerator : signalGenerator {
   }
 
   public override void processBuffer(float[] buffer, double dspTime, int channels) {
-    counter = NoiseProcessBuffer(buffer, ref curSample, buffer.Length, channels, speedPercent, counter, speedFrames, ref updated);
+    counter = SoundStageNative.NoiseProcessBuffer(buffer, ref curSample, buffer.Length, channels, speedPercent, counter, speedFrames, ref updated);
   }
 }

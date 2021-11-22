@@ -1,0 +1,2 @@
+﻿main.cpp(209,10): warning : implicit conversion from 'int' to 'char' changes value from 128 to -128 [-Wconstant-conversion]
+  SoundStageNative.vcxproj -> C:\Users\Daniel\_Projects\Unity\soundstagevr\Assets\SoundStageNative\SoundStageNative\Debug\SoundStageNative.lib

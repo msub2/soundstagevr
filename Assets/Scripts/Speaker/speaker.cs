@@ -20,14 +20,32 @@ public class speaker : MonoBehaviour {
 
   public float volume = 1;
   public signalGenerator incoming;
+  private AudioSource audioSource;
+  private float[] buffer = new float[1024];
 
-  [DllImport("SoundStageNative")]
-  public static extern void MultiplyArrayBySingleValue(float[] buffer, int length, float val);
+  //[DllImport("__Internal")]
+  //public static extern void MultiplyArrayBySingleValue(float[] buffer, int length, float val);
+  [DllImport("__Internal")] public static extern void CreateBuffer();
+  [DllImport("__Internal")] public static extern void UpdateBuffer(float[] buffer, int bufferLength);
 
-  private void OnAudioFilterRead(float[] buffer, int channels) {
+  private void Awake() {
+    CreateBuffer();
+    InvokeRepeating("AudioUpdate", 0, 0.023f); // 1024 / 44100
+  }
+
+  private void AudioUpdate() {
     if (incoming == null) return;
     double dspTime = AudioSettings.dspTime;
-    incoming.processBuffer(buffer, dspTime, channels);
-    if (volume != 1) MultiplyArrayBySingleValue(buffer, buffer.Length, volume);
+    incoming.processBuffer(buffer, dspTime, 2);
+    if (volume != 1) SoundStageNative.MultiplyArrayBySingleValue(buffer, buffer.Length, volume);
+    UpdateBuffer(buffer, buffer.Length);
   }
+
+  // private void OnAudioFilterRead(float[] buffer, int channels) {
+  //   Debug.Log(buffer.Length);
+  //   if (incoming == null) return;
+  //   double dspTime = AudioSettings.dspTime;
+  //   incoming.processBuffer(buffer, dspTime, channels);
+  //   if (volume != 1) SoundStageNative.MultiplyArrayBySingleValue(buffer, buffer.Length, volume);
+  // }
 }

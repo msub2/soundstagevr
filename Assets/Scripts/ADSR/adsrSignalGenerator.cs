@@ -52,12 +52,12 @@ public class adsrSignalGenerator : signalGenerator {
   public signalGenerator incoming;
   public adsrDeviceInterface _devinterface;
 
-  [DllImport("SoundStageNative", EntryPoint = "ADSRSignalGenerator")]
-  public static extern void ADSRSignalGenerator(float[] buffer, int length, int channels, int[] frames, ref int frameCount, bool active, ref float ADSRvolume,
-  float[] volumes, float startVal, ref int curFrame, bool sustaining);
+  //[DllImport("__Internal")]
+  //public static extern void ADSRSignalGenerator(float[] buffer, int length, int channels, int[] frames, ref int frameCount, bool active, ref float ADSRvolume,
+  //float[] volumes, float startVal, ref int curFrame, bool sustaining);
 
-  [DllImport("SoundStageNative")]
-  public static extern bool GetBinaryState(float[] buffer, int length, int channels, ref float lastBuf);
+  //[DllImport("__Internal")]
+  //public static extern bool GetBinaryState(float[] buffer, int length, int channels, ref float lastBuf);
 
   public override void Awake() {
     base.Awake();
@@ -138,14 +138,14 @@ public class adsrSignalGenerator : signalGenerator {
   int curFrame = 0;
   int frameCount = 0;
   public override void processBuffer(float[] buffer, double dspTime, int channels) {
-    ADSRSignalGenerator(buffer, buffer.Length, channels, frames, ref frameCount, active, ref ADSRvolume, volumes, startVal, ref curFrame, sustaining);
+    SoundStageNative.ADSRSignalGenerator(buffer, buffer.Length, channels, frames, ref frameCount, active, ref ADSRvolume, volumes, startVal, ref curFrame, sustaining);
 
     if (incoming != null && _devinterface != null) {
       if (pulseBuffer.Length != buffer.Length)
         System.Array.Resize(ref pulseBuffer, buffer.Length);
 
       incoming.processBuffer(pulseBuffer, dspTime, channels);
-      bool on = GetBinaryState(pulseBuffer, pulseBuffer.Length, channels, ref lastBuffer);
+      bool on = SoundStageNative.GetBinaryState(pulseBuffer, pulseBuffer.Length, channels, ref lastBuffer);
       _devinterface.pulseUpdate(on);
     }
   }

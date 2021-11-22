@@ -23,8 +23,8 @@ using System.Runtime.InteropServices;
 public class bufferToWav : MonoBehaviour {
     public static bufferToWav instance;
 
-    [DllImport("SoundStageNative")]
-    public static extern void CompressClip(float[] clip, int length);
+    //[DllImport("__Internal")]
+    //public static extern void CompressClip(float[] clip, int length);
 
     void Awake()
     {
@@ -70,7 +70,7 @@ public class bufferToWav : MonoBehaviour {
         BinaryWriter _binarystream = new BinaryWriter(_filestream);
         WavHeader(_binarystream, length);
 
-        CompressClip(clip, clip.Length);
+        SoundStageNative.CompressClip(clip, clip.Length);
 
         int counter = 0;
         for (int i = 0; i < length; i++)

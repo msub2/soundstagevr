@@ -20,8 +20,8 @@ using System.Runtime.InteropServices;
 public class mixer : signalGenerator {
   public List<signalGenerator> incoming = new List<signalGenerator>();
 
-  [DllImport("SoundStageNative")] public static extern void SetArrayToSingleValue(float[] a, int length, float val);
-  [DllImport("SoundStageNative")] public static extern void AddArrays(float[] a, float[] b, int length);
+  //[DllImport("__Internal")] public static extern void SetArrayToSingleValue(float[] a, int length, float val);
+  //[DllImport("__Internal")] public static extern void AddArrays(float[] a, float[] b, int length);
   const int MAX_COUNT = 32; // It's very important to enforce this gracefully. Feel free to change the number, but must be enforced in game.
   float[][] b;
 
@@ -40,13 +40,13 @@ public class mixer : signalGenerator {
       if (buffer.Length != b[i].Length)
         System.Array.Resize(ref b[i], buffer.Length);
 
-      SetArrayToSingleValue(b[i], buffer.Length, 0.0f);
+      SoundStageNative.SetArrayToSingleValue(b[i], buffer.Length, 0.0f);
 
       if (i < incoming.Count) {
         if (incoming[i] != null) incoming[i].processBuffer(b[i], dspTime, channels);
       }
     }
 
-    for (int i = 0; i < count; i++) AddArrays(buffer, b[i], buffer.Length);
+    for (int i = 0; i < count; i++) SoundStageNative.AddArrays(buffer, b[i], buffer.Length);
   }
 }

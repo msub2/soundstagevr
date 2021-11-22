@@ -30,8 +30,8 @@ public class midiNote : signalGenerator {
 
   public bool noteOn = false;
 
-  [DllImport("SoundStageNative")]
-  public static extern void SetArrayToSingleValue(float[] a, int length, float val);
+  //[DllImport("__Internal")]
+  //public static extern void SetArrayToSingleValue(float[] a, int length, float val);
 
   public override void Awake() {
     base.Awake();
@@ -72,6 +72,6 @@ public class midiNote : signalGenerator {
   }
 
   public override void processBuffer(float[] buffer, double dspTime, int channels) {
-    SetArrayToSingleValue(buffer, buffer.Length, noteOn ? 1f : -1f);
+    SoundStageNative.SetArrayToSingleValue(buffer, buffer.Length, noteOn ? 1f : -1f);
   }
 }

@@ -249,7 +249,7 @@ public class tape : manipObject {
   }
 
   IEnumerator streamRoutine(string f) {
-    AudioClip c = RuntimeAudioClipLoader.Manager.Load(f, false, true, false);
+    /*AudioClip c = RuntimeAudioClipLoader.Manager.Load(f, false, true, false);
 
     loaderObject = Instantiate(loadingPrefab, transform, false) as GameObject;
     loaderObject.transform.localPosition = new Vector3(-.03f, -.037f, .01f);
@@ -260,7 +260,8 @@ public class tape : manipObject {
       yield return null;
     }
     if (loaderObject != null) Destroy(loaderObject);
-    masterObj.parent.GetComponent<AudioSource>().PlayOneShot(c, .25f);
+    masterObj.parent.GetComponent<AudioSource>().PlayOneShot(c, .25f);*/
+    yield return null;
   }
 
   Coroutine _StreamRoutine;

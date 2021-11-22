@@ -15,10 +15,9 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using static OVRHand;
-using OculusSampleFramework;
 //using System.Linq;
 //using Valve.VR;
+using WebXR;
 
 public class manipulator : MonoBehaviour {
   int controllerIndex = -1;
@@ -40,6 +39,8 @@ public class manipulator : MonoBehaviour {
   public GameObject controllerRep;
   bool usingOculus = false;
   public Color onColor = Color.HSVToRGB(208 / 359f, 234 / 255f, 93 / 255f);
+
+  private WebXRController webxrController;
 
   void Awake() {
     _menuspawn = GetComponent<menuspawn>();
@@ -71,6 +72,8 @@ public class manipulator : MonoBehaviour {
 
   public void SetDeviceIndex(int index) {
     controllerIndex = index;
+    webxrController = WebXRManager.Instance.GetComponentsInChildren<WebXRController>()[index];
+    GetComponentInParent<webxrLink>().controller = webxrController;
   }
 
   bool grabbing;
@@ -181,11 +184,11 @@ public class manipulator : MonoBehaviour {
 
         if (controllerIndex == 0)
         {
-            UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.LeftHanded, devices);
+            UnityEngine.XR.InputDevices.GetDevicesWithCharacteristics(UnityEngine.XR.InputDeviceCharacteristics.Left, devices);
         }
         else if (controllerIndex == 1)
         {
-            UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.RightHanded, devices);
+            UnityEngine.XR.InputDevices.GetDevicesWithCharacteristics(UnityEngine.XR.InputDeviceCharacteristics.Right, devices);
         }
 
         foreach (var device in devices)
@@ -211,11 +214,11 @@ public class manipulator : MonoBehaviour {
 
         if (controllerIndex == 0)
         {
-            UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.LeftHanded, devices);
+            UnityEngine.XR.InputDevices.GetDevicesWithCharacteristics(UnityEngine.XR.InputDeviceCharacteristics.Left, devices);
         }
         else if (controllerIndex == 1)
         {
-            UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.RightHanded, devices);
+            UnityEngine.XR.InputDevices.GetDevicesWithCharacteristics(UnityEngine.XR.InputDeviceCharacteristics.Right, devices);
         }
 
         foreach (var device in devices)
@@ -371,18 +374,7 @@ public class manipulator : MonoBehaviour {
   void updateProngs() {
     float val = 0;
 //    if (masterControl.instance.currentPlatform == masterControl.platform.Vive) val = SteamVR_Controller.Input(controllerIndex).GetAxis(EVRButtonId.k_EButton_Axis1).x;
-            if (controllerIndex == 0)
-            {
-                val = Input.GetAxis("triggerR");
-            }
-            else if (controllerIndex == 1)
-            {
-                val = Input.GetAxis("triggerL");
-            }
-            else
-            {
-                val = 0;
-            }
+    val = webxrController.GetAxis(WebXRController.AxisTypes.Trigger);
 
     if (!usingOculus) {
       triggerTrans.localRotation = Quaternion.Euler(Mathf.Lerp(0, 45, val), 180, 0);
@@ -437,33 +429,17 @@ public class manipulator : MonoBehaviour {
     bool pOn; // = SteamVR_Controller.Input(controllerIndex).GetPressDown(SteamVR_Controller.ButtonMask.Touchpad);
     bool pOff; // = SteamVR_Controller.Input(controllerIndex).GetPressUp(SteamVR_Controller.ButtonMask.Touchpad);
 
-        if (controllerIndex == 0)
-        {
-            tOn = Input.GetButtonDown("touchR");
-            tOff = Input.GetButtonUp("touchR");
-            pOn = Input.GetButtonDown("pressR");
-            pOff = Input.GetButtonUp("pressR");
-        }
-        else if (controllerIndex == 1)
-        {
-            tOn = Input.GetButtonDown("touchL");
-            tOff = Input.GetButtonUp("touchL");
-            pOn = Input.GetButtonDown("pressL");
-            pOff = Input.GetButtonUp("pressL");
-        }
-        else
-        {
-            tOn = tOff = pOn = pOff = false;
-        }
+    tOn = pOn = webxrController.GetButtonDown(WebXRController.ButtonTypes.Touchpad);
+    tOff = pOff = webxrController.GetButtonUp(WebXRController.ButtonTypes.Touchpad);
     bool activeManipObj = (grabbing && selectedObject != null);
 
     if (tOn) {
-            touchpadActive = true;
+      touchpadActive = true;
       if (controllerVisible) _touchpad.setTouch(true);
       if (activeManipObj) selectedObject.setTouch(true);
     }
     if (tOff) {
-            touchpadActive = false;
+      touchpadActive = false;
       if (controllerVisible) _touchpad.setTouch(false);
       if (activeManipObj) selectedObject.setTouch(false);
     }
@@ -471,29 +447,17 @@ public class manipulator : MonoBehaviour {
     if (!touchpadActive) return;
 
     Vector2 pos; // = SteamVR_Controller.Input(controllerIndex).GetAxis();
-        if (controllerIndex == 0)
-        {
-            pos = new Vector2(Input.GetAxis("touchAxisXR"), Input.GetAxis("touchAxisYR"));
-        }
-        else if (controllerIndex == 1)
-        {
-            pos = new Vector2(Input.GetAxis("touchAxisXL"), Input.GetAxis("touchAxisYL"));
-        }
-        else
-        {
-            pos = new Vector2(0.5f, 0.5f);
-        }
+    pos = webxrController.GetAxis2D(WebXRController.Axis2DTypes.Touchpad);
     if (controllerVisible) _touchpad.updateTouchPos(pos);
     if (activeManipObj) selectedObject.updateTouchPos(pos);
 
     if (pOn) {
-
       if (controllerVisible) _touchpad.setPress(true);
       if (activeManipObj) selectedObject.setPress(true);
     }
 
     if (pOff) {
-            if (controllerVisible) _touchpad.setPress(false);
+      if (controllerVisible) _touchpad.setPress(false);
       if (activeManipObj) selectedObject.setPress(false);
     }
   }
@@ -505,31 +469,8 @@ public class manipulator : MonoBehaviour {
     if (masterControl.instance.currentPlatform == masterControl.platform.Vive) {
 //      secondaryDown = SteamVR_Controller.Input(controllerIndex).GetPressDown(SteamVR_Controller.ButtonMask.ApplicationMenu);
 //      secondaryUp = SteamVR_Controller.Input(controllerIndex).GetPressUp(SteamVR_Controller.ButtonMask.ApplicationMenu);
-                if (controllerIndex == 0)
-                {
-                    secondaryDown = Input.GetButtonDown("secondaryButtonR");
-                }
-                else if (controllerIndex == 1)
-                {
-                    secondaryDown = Input.GetButtonDown("secondaryButtonL");
-                }
-                else
-                {
-                    secondaryDown = false;
-                }
-
-                if (controllerIndex == 0)
-                {
-                    secondaryUp = Input.GetButtonUp("secondaryButtonR");
-                }
-                else if (controllerIndex == 1)
-                {
-                    secondaryUp = Input.GetButtonUp("secondaryButtonL");
-                }
-                else
-                {
-                    secondaryUp = false;
-                }
+        secondaryDown = webxrController.GetButtonDown(WebXRController.ButtonTypes.ButtonA);
+        secondaryUp = webxrController.GetButtonUp(WebXRController.ButtonTypes.ButtonA);
     }
     if (controllerVisible) {
       if (secondaryDown) {
@@ -553,18 +494,18 @@ public class manipulator : MonoBehaviour {
 
   public bool triggerDown = false;
     public bool pinchPinkyDown = false;
-    static OVRPlugin.Controller lastControl = OVRPlugin.Controller.None;
+    //static OVRPlugin.Controller lastControl = OVRPlugin.Controller.None;
     void Update() {
  
     updateProngs();
     bool triggerButtonDown, triggerButtonUp, menuButtonDown;
 
-        OVRPlugin.Controller currentControl = OVRPlugin.GetActiveController(); //get current controller scheme
+        //OVRPlugin.Controller currentControl = OVRPlugin.GetActiveController(); //get current controller scheme
         bool currentControlHands = false;
         bool currentControlChanged = false;
         float pinchIndexStrength = 0;
         float pinchPinkyStrength = 0;
-        if ((OVRPlugin.Controller.Hands == currentControl) || (OVRPlugin.Controller.LHand == currentControl) || (OVRPlugin.Controller.RHand == currentControl))
+        /*if ((OVRPlugin.Controller.Hands == currentControl) || (OVRPlugin.Controller.LHand == currentControl) || (OVRPlugin.Controller.RHand == currentControl))
         {
             currentControlHands = true;
             //pinchIndexStrength = Hands.Instance.RightHand.PinchStrength(OVRPlugin.HandFinger.Index);
@@ -574,7 +515,7 @@ public class manipulator : MonoBehaviour {
         {
             currentControlChanged = true;
             lastControl = currentControl;
-        }
+        }*/
         if (masterControl.instance.currentPlatform == masterControl.platform.Vive) {
 //      triggerButtonDown = SteamVR_Controller.Input(controllerIndex).GetPressDown(SteamVR_Controller.ButtonMask.Trigger);
 //      triggerButtonUp = SteamVR_Controller.Input(controllerIndex).GetPressUp(SteamVR_Controller.ButtonMask.Trigger);
@@ -586,18 +527,7 @@ public class manipulator : MonoBehaviour {
             }
             else
             {
-                if (controllerIndex == 0)
-                {
-                    triggerButtonDown = Input.GetAxis("triggerR") > 0.75;
-                }
-                else if (controllerIndex == 1)
-                {
-                    triggerButtonDown = Input.GetAxis("triggerL") > 0.75;
-                }
-                else
-                {
-                    triggerButtonDown = false;
-                }
+                triggerButtonDown = webxrController.GetButtonDown(WebXRController.ButtonTypes.Trigger);
             }
         }
         else
@@ -617,18 +547,7 @@ public class manipulator : MonoBehaviour {
             }
             else
             {
-                if (controllerIndex == 0)
-                {
-                    triggerButtonUp = Input.GetAxis("triggerR") < 0.25;
-                }
-                else if (controllerIndex == 1)
-                {
-                    triggerButtonUp = Input.GetAxis("triggerL") < 0.25;
-                }
-                else
-                {
-                    triggerButtonUp = false;
-                }
+                triggerButtonUp = webxrController.GetButtonUp(WebXRController.ButtonTypes.Trigger);
             }
         }
         else
@@ -665,33 +584,11 @@ public class manipulator : MonoBehaviour {
                 }
                 else
                 {
-                    if (controllerIndex == 0)
-                    {
-                        menuButtonDown = Input.GetButtonDown("menuButtonR");
-                    }
-                    else if (controllerIndex == 1)
-                    {
-                        menuButtonDown = Input.GetButtonDown("menuButtonL");
-                    }
-                    else
-                    {
-                        menuButtonDown = false;
-                    }
+                    menuButtonDown = webxrController.GetButtonDown(WebXRController.ButtonTypes.Grip);
                 }
       } else {
                 Vector2 pos; // = SteamVR_Controller.Input(controllerIndex).GetAxis();
-                if (controllerIndex == 0)
-                {
-                    pos = new Vector2(Input.GetAxis("touchAxisXR"), Input.GetAxis("touchAxisYR"));
-                }
-                else if (controllerIndex == 1)
-                {
-                    pos = new Vector2(Input.GetAxis("touchAxisXL"), Input.GetAxis("touchAxisYL"));
-                }
-                else
-                {
-                    pos = new Vector2(0.5f, 0.5f);
-                }
+                pos = webxrController.GetAxis2D(WebXRController.Axis2DTypes.Touchpad);
 
                 if (grabbing && selectedObject != null) selectedObject.updateTouchPos(pos);
 
@@ -723,18 +620,7 @@ public class manipulator : MonoBehaviour {
                 }
                 else
                 {
-                    if (controllerIndex == 0)
-                    {
-                        menuButtonDown = Input.GetButtonDown("menuButtonR");
-                    }
-                    else if (controllerIndex == 1)
-                    {
-                        menuButtonDown = Input.GetButtonDown("menuButtonL");
-                    }
-                    else
-                    {
-                        menuButtonDown = false;
-                    }
+                    menuButtonDown = webxrController.GetButtonDown(WebXRController.ButtonTypes.Grip);
                 }
       }
     } else {

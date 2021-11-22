@@ -15,6 +15,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using WebXR;
 
 public class menuManager : MonoBehaviour {
   public GameObject item;
@@ -153,7 +154,7 @@ public class menuManager : MonoBehaviour {
           }
         }
         transform.position = startPos + Vector3.Lerp(Vector3.zero, Vector3.up * .025f, timer);
-        Vector3 camPos = Camera.main.transform.position;
+        Vector3 camPos = WebXRManager.Instance.GetComponentsInChildren<Camera>()[1].transform.position;
         camPos.y -= .2f;
         transform.LookAt(camPos, Vector3.up);
         yield return null;

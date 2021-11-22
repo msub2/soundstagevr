@@ -30,8 +30,8 @@ public class cameraDeviceInterface : deviceInterface {
 
   bool activated = false;
 
-  [DllImport("SoundStageNative")]
-  public static extern int CountPulses(float[] buffer, int length, int channels, float[] lastSig);
+  //[DllImport("__Internal")]
+  //public static extern int CountPulses(float[] buffer, int length, int channels, float[] lastSig);
 
   public override void Awake() {
     base.Awake();
@@ -131,7 +131,7 @@ public class cameraDeviceInterface : deviceInterface {
     float[] playBuffer = new float[buffer.Length];
     externalPulse.processBuffer(playBuffer, dspTime, channels);
 
-    hits += CountPulses(playBuffer, buffer.Length, channels, lastPlaySig);
+    hits += SoundStageNative.CountPulses(playBuffer, buffer.Length, channels, lastPlaySig);
   }
 
 

@@ -28,8 +28,8 @@ public class midiOutDeviceInterface : deviceInterface {
 
   midiComponentInterface _midiComponentInterface;
 
-  [DllImport("SoundStageNative")]
-  public static extern void SetArrayToSingleValue(float[] a, int length, float val);
+  //[DllImport("__Internal")]
+  //public static extern void SetArrayToSingleValue(float[] a, int length, float val);
 
   public override void Awake() {
     base.Awake();

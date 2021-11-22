@@ -19,12 +19,12 @@ using System.Runtime.InteropServices;
 
 public class MicrophoneSignalGenerator : signalGenerator {
 
-  [DllImport("SoundStageNative")]
-  public static extern void SetArrayToSingleValue(float[] a, int length, float val);
-  [DllImport("SoundStageNative")]
-  public static extern void CopyArray(float[] a, float[] b, int length);
-  [DllImport("SoundStageNative")]
-  public static extern void MicFunction(float[] a, float[] b, int length, float val);
+  //[DllImport("__Internal")]
+  //public static extern void SetArrayToSingleValue(float[] a, int length, float val);
+  //[DllImport("__Internal")]
+  //public static extern void CopyArray(float[] a, float[] b, int length);
+  //[DllImport("__Internal")]
+  //public static extern void MicFunction(float[] a, float[] b, int length, float val);
 
   AudioClip micClip;
   AudioSource source;
@@ -50,9 +50,9 @@ public class MicrophoneSignalGenerator : signalGenerator {
 
   Coroutine _MicActivateRoutine;
   void SelectMic(int num) {
-    if (num >= Microphone.devices.Length) {
+    /*if (num >= Microphone.devices.Length) {
       return;
-    }
+    }*/
 
     if (_MicActivateRoutine != null) StopCoroutine(_MicActivateRoutine);
     _MicActivateRoutine = StartCoroutine(MicActivateRoutine(num));
@@ -60,18 +60,18 @@ public class MicrophoneSignalGenerator : signalGenerator {
 
   IEnumerator MicActivateRoutine(int num) {
     source.Stop();
-    Microphone.End(Microphone.devices[curMicID]);
+    //Microphone.End(Microphone.devices[curMicID]);
     curMicID = num;
 
-    micClip = Microphone.Start(Microphone.devices[num], true, 1, 44100);
+    //micClip = Microphone.Start(Microphone.devices[num], true, 1, 44100);
 
     yield return null;
-    if (micClip != null) {
+    /*if (micClip != null) {
       source.clip = micClip;
       source.loop = true;
       while (!(Microphone.GetPosition(null) > 0)) { }
       source.Play();
-    }
+    }*/
 
     yield return null;
 
@@ -82,8 +82,8 @@ public class MicrophoneSignalGenerator : signalGenerator {
     if (sharedBuffer.Length != buffer.Length)
       System.Array.Resize(ref sharedBuffer, buffer.Length);
 
-    CopyArray(buffer, sharedBuffer, buffer.Length);
-    SetArrayToSingleValue(buffer, buffer.Length, 0.0f);
+    SoundStageNative.CopyArray(buffer, sharedBuffer, buffer.Length);
+    SoundStageNative.SetArrayToSingleValue(buffer, buffer.Length, 0.0f);
   }
 
   public override void processBuffer(float[] buffer, double dspTime, int channels) {
@@ -91,6 +91,6 @@ public class MicrophoneSignalGenerator : signalGenerator {
       return;
     }
 
-    MicFunction(buffer, sharedBuffer, buffer.Length, amp);
+    SoundStageNative.MicFunction(buffer, sharedBuffer, buffer.Length, amp);
   }
 }

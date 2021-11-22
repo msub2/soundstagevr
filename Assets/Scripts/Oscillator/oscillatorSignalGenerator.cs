@@ -31,9 +31,9 @@ public class oscillatorSignalGenerator : signalGenerator
     float keyMultConst = Mathf.Pow(2, 1f / 12);
 
     float prevAmplitude;
-    [DllImport("SoundStageNative")]
-    public static extern void OscillatorSignalGenerator(float[] buffer, int length, int channels, ref double _phase, float analogWave, float frequency, float amplitude, float prevAmplitude
-                                , float[] frequencyBuffer, float[] amplitudeBuffer, bool bFreqGen, bool bAmpGen, double _sampleDuration, ref double dspTime);
+    //[DllImport("__Internal")]
+    //public static extern void OscillatorSignalGenerator(float[] buffer, int length, int channels, ref double _phase, float analogWave, float frequency, float amplitude, float prevAmplitude
+    //                            , float[] frequencyBuffer, float[] amplitudeBuffer, bool bFreqGen, bool bAmpGen, double _sampleDuration, ref double dspTime);
 
     public override void processBuffer(float[] buffer, double dspTime, int channels)
     {
@@ -46,7 +46,7 @@ public class oscillatorSignalGenerator : signalGenerator
         if (ampGen != null) ampGen.processBuffer(amplitudeBuffer, dspTime, channels);
 
         // operates on every buffer pair
-        OscillatorSignalGenerator(buffer, buffer.Length, channels, ref _phase, analogWave, frequency, amplitude, prevAmplitude, frequencyBuffer, amplitudeBuffer
+        SoundStageNative.OscillatorSignalGenerator(buffer, buffer.Length, channels, ref _phase, analogWave, frequency, amplitude, prevAmplitude, frequencyBuffer, amplitudeBuffer
             , freqGen != null, ampGen != null, _sampleDuration, ref dspTime);
 
         // wave viz if there

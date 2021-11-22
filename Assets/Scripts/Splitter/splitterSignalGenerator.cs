@@ -29,12 +29,12 @@ public class splitterSignalGenerator : signalGenerator {
   const int MAX_COUNT = 16;
   float[][] mergeBuffers;
 
-  [DllImport("SoundStageNative")]
-  public static extern void CopyArray(float[] a, float[] b, int length);
-  [DllImport("SoundStageNative")]
-  public static extern void SetArrayToSingleValue(float[] a, int length, float val);
-  [DllImport("SoundStageNative")]
-  public static extern void AddArrays(float[] a, float[] b, int length);
+  //[DllImport("__Internal")]
+  //public static extern void CopyArray(float[] a, float[] b, int length);
+  //[DllImport("__Internal")]
+  //public static extern void SetArrayToSingleValue(float[] a, int length, float val);
+  //[DllImport("__Internal")]
+  //public static extern void AddArrays(float[] a, float[] b, int length);
 
   public override void Awake() {
     base.Awake();
@@ -57,15 +57,15 @@ public class splitterSignalGenerator : signalGenerator {
         if (buffer.Length != curBuffer.Length)
           System.Array.Resize(ref curBuffer, buffer.Length);
 
-        if (incoming == null) SetArrayToSingleValue(buffer, buffer.Length, 0.0f);
+        if (incoming == null) SoundStageNative.SetArrayToSingleValue(buffer, buffer.Length, 0.0f);
         else incoming.processBuffer(buffer, dspTime, channels);
 
-        SetArrayToSingleValue(curBuffer, buffer.Length, 0.0f);
-        CopyArray(buffer, curBuffer, buffer.Length);
-      } else CopyArray(curBuffer, buffer, buffer.Length);
+        SoundStageNative.SetArrayToSingleValue(curBuffer, buffer.Length, 0.0f);
+        SoundStageNative.CopyArray(buffer, curBuffer, buffer.Length);
+      } else SoundStageNative.CopyArray(curBuffer, buffer, buffer.Length);
 
     } else {
-      if (incoming == null) SetArrayToSingleValue(buffer, buffer.Length, 0.0f);
+      if (incoming == null) SoundStageNative.SetArrayToSingleValue(buffer, buffer.Length, 0.0f);
       else incoming.processBuffer(buffer, dspTime, channels);
 
       int count = nodes.Count;
@@ -74,14 +74,14 @@ public class splitterSignalGenerator : signalGenerator {
         if (buffer.Length != mergeBuffers[i].Length)
           System.Array.Resize(ref mergeBuffers[i], buffer.Length);
 
-        SetArrayToSingleValue(mergeBuffers[i], buffer.Length, 0.0f);
+        SoundStageNative.SetArrayToSingleValue(mergeBuffers[i], buffer.Length, 0.0f);
 
         if (i < nodes.Count) {
           if (nodes[i] != null) nodes[i].processBuffer(mergeBuffers[i], dspTime, channels);
         }
       }
 
-      for (int i = 0; i < count; i++) AddArrays(buffer, mergeBuffers[i], buffer.Length);
+      for (int i = 0; i < count; i++) SoundStageNative.AddArrays(buffer, mergeBuffers[i], buffer.Length);
 
     }
   }

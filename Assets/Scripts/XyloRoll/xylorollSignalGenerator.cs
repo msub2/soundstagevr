@@ -25,11 +25,11 @@ public class xylorollSignalGenerator : signalGenerator {
 
   List<monophone> voices;
 
-  [DllImport("SoundStageNative")]
-  public static extern void XylorollMergeSignalsWithoutOsc(float[] buf, int length, float[] buf1, float[] buf2);
+  //[DllImport("__Internal")]
+  //public static extern void XylorollMergeSignalsWithoutOsc(float[] buf, int length, float[] buf1, float[] buf2);
 
-  [DllImport("SoundStageNative")]
-  public static extern void XylorollMergeSignalsWithOsc(float[] buf, int length, float[] buf1, float[] buf2);
+  //[DllImport("__Internal")]
+  //public static extern void XylorollMergeSignalsWithOsc(float[] buf, int length, float[] buf1, float[] buf2);
 
   public void spawnVoices(int n, float[] adsrVol, float[] adsrDur) {
     voices = new List<monophone>();
@@ -138,7 +138,7 @@ public class xylorollSignalGenerator : signalGenerator {
           voices[i].osc[1].processBuffer(b2, dspTime, channels);
 
 
-          XylorollMergeSignalsWithOsc(buffer, buffer.Length, b1, b2);
+          SoundStageNative.XylorollMergeSignalsWithOsc(buffer, buffer.Length, b1, b2);
 
         } else {
           voices[i].curKey = -1;
@@ -152,7 +152,7 @@ public class xylorollSignalGenerator : signalGenerator {
           voices[i].sampler.processBuffer(b1, dspTime, channels);
           voices[i].adsr.processBuffer(b2, dspTime, channels);
 
-          XylorollMergeSignalsWithoutOsc(buffer, buffer.Length, b1, b2);
+          SoundStageNative.XylorollMergeSignalsWithoutOsc(buffer, buffer.Length, b1, b2);
         } else voices[i].curKey = -1;
 
       }

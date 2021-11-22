@@ -20,11 +20,11 @@ public class maracaSignalGenerator : signalGenerator {
   public float curShake = 0;
   float amp = 1f;
 
-  [DllImport("SoundStageNative")]
-  public static extern void MaracaProcessBuffer(float[] buffer, int length, int channels, float amp, ref double _phase, double _sampleDuration);
+  //[DllImport("__Internal")]
+  //public static extern void MaracaProcessBuffer(float[] buffer, int length, int channels, float amp, ref double _phase, double _sampleDuration);
 
   public override void processBuffer(float[] buffer, double dspTime, int channels) {
     amp = curShake;
-    MaracaProcessBuffer(buffer, buffer.Length, channels, amp, ref _phase, _sampleDuration);
+    SoundStageNative.MaracaProcessBuffer(buffer, buffer.Length, channels, amp, ref _phase, _sampleDuration);
   }
 }

@@ -32,8 +32,8 @@ public class midiNoteOut : signalGenerator {
 
   public bool noteOn = false;
 
-  [DllImport("SoundStageNative")]
-  public static extern bool GetBinaryState(float[] buffer, int length, int channels, ref float lastBuf);
+  //[DllImport("__Internal")]
+  //public static extern bool GetBinaryState(float[] buffer, int length, int channels, ref float lastBuf);
 
   public override void Awake() {
     base.Awake();
@@ -62,7 +62,7 @@ public class midiNoteOut : signalGenerator {
     if (incoming == null) return;
     incoming.processBuffer(buffer, dspTime, channels);
 
-    bool on = GetBinaryState(buffer, buffer.Length, channels, ref lastBuffer);
+    bool on = SoundStageNative.GetBinaryState(buffer, buffer.Length, channels, ref lastBuffer);
 
     if (on != noteOn) {
       noteOn = on;

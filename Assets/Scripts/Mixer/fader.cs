@@ -30,13 +30,13 @@ public class fader : signalGenerator {
 
   float[] bufferB;
 
-  [DllImport("SoundStageNative")] public static extern void SetArrayToSingleValue(float[] a, int length, float val);
-  [DllImport("SoundStageNative")] public static extern void processFader(float[] buffer, int length, int channels, float[] bufferB, int lengthB, bool aSig, bool bSig, bool samePercent, float lastpercent, float sliderPercent);
+  //[DllImport("__Internal")] public static extern void SetArrayToSingleValue(float[] a, int length, float val);
+  //[DllImport("__Internal")] public static extern void processFader(float[] buffer, int length, int channels, float[] bufferB, int lengthB, bool aSig, bool bSig, bool samePercent, float lastpercent, float sliderPercent);
 
   public override void Awake() {
     fadeSlider = GetComponentInChildren<slider>();
     bufferB = new float[MAX_BUFFER_LENGTH];
-    SetArrayToSingleValue(bufferB, bufferB.Length, 0.0f);
+    SoundStageNative.SetArrayToSingleValue(bufferB, bufferB.Length, 0.0f);
   }
 
   void Update() {
@@ -63,7 +63,7 @@ public class fader : signalGenerator {
 
   public override void processBuffer(float[] buffer, double dspTime, int channels) {
     if (!active || (incomingA == null && incomingB == null)) {
-      SetArrayToSingleValue(buffer, buffer.Length, 0.0f);
+      SoundStageNative.SetArrayToSingleValue(buffer, buffer.Length, 0.0f);
       return;
     }
 
@@ -75,14 +75,14 @@ public class fader : signalGenerator {
       if (bufferB.Length != buffer.Length)
         System.Array.Resize(ref bufferB, buffer.Length);
 
-      SetArrayToSingleValue(bufferB, bufferB.Length, 0.0f);
+      SoundStageNative.SetArrayToSingleValue(bufferB, bufferB.Length, 0.0f);
 
       incomingA.processBuffer(buffer, dspTime, channels);
       incomingB.processBuffer(bufferB, dspTime, channels);
     } else if (incomingA != null) incomingA.processBuffer(buffer, dspTime, channels);
     else incomingB.processBuffer(buffer, dspTime, channels);
 
-    processFader(buffer, buffer.Length, channels, bufferB, bufferB.Length, incomingA != null, incomingB != null, samePercent, lastpercent, sliderPercent);
+    SoundStageNative.processFader(buffer, buffer.Length, channels, bufferB, bufferB.Length, incomingA != null, incomingB != null, samePercent, lastpercent, sliderPercent);
 
     lastpercent = sliderPercent;
   }

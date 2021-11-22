@@ -26,8 +26,8 @@ public class splitterNodeSignalGenerator : signalGenerator {
   public omniJack jack;
   signalGenerator sig;
 
-  [DllImport("SoundStageNative")]
-  public static extern void SetArrayToSingleValue(float[] a, int length, float val);
+  //[DllImport("__Internal")]
+  //public static extern void SetArrayToSingleValue(float[] a, int length, float val);
 
   public override void Awake() {
     sig = mainSig;
@@ -78,7 +78,7 @@ public class splitterNodeSignalGenerator : signalGenerator {
 
   public override void processBuffer(float[] buffer, double dspTime, int channels) {
     if (sig == null) {
-      SetArrayToSingleValue(buffer, buffer.Length, 0.0f);
+      SoundStageNative.SetArrayToSingleValue(buffer, buffer.Length, 0.0f);
       return;
     }
 

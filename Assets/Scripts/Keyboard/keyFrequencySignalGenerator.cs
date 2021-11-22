@@ -23,8 +23,8 @@ public class keyFrequencySignalGenerator : signalGenerator {
   int curKey = -1;
   int semitone = 0;
 
-  [DllImport("SoundStageNative")]
-  public static extern void KeyFrequencySignalGenerator(float[] buffer, int length, int channels, int semitone, float keyMultConst, ref float filteredVal);
+  //[DllImport("__Internal")]
+  //public static extern void KeyFrequencySignalGenerator(float[] buffer, int length, int channels, int semitone, float keyMultConst, ref float filteredVal);
 
   public void UpdateKey(int k) {
     curKey = k;
@@ -43,6 +43,6 @@ public class keyFrequencySignalGenerator : signalGenerator {
   float filteredVal = 0;
 
   public override void processBuffer(float[] buffer, double dspTime, int channels) {
-    KeyFrequencySignalGenerator(buffer, buffer.Length, channels, semitone, keyMultConst, ref filteredVal);
+    SoundStageNative.KeyFrequencySignalGenerator(buffer, buffer.Length, channels, semitone, keyMultConst, ref filteredVal);
   }
 }

@@ -20,8 +20,8 @@ using System.Runtime.InteropServices;
 public class timelineDeviceInterface : deviceInterface {
   public GameObject trackPrefab;
 
-  [DllImport("SoundStageNative")]
-  public static extern void SetArrayToSingleValue(float[] a, int length, float val);
+  //[DllImport("__Internal")]
+  //public static extern void SetArrayToSingleValue(float[] a, int length, float val);
 
   timelineComponentInterface _timeline;
   public Transform trackHandle;
@@ -86,7 +86,7 @@ public class timelineDeviceInterface : deviceInterface {
     for (int i = 0; i < _trackInterfaces.Count; i++) {
       if (!_trackInterfaces[i].isOutgoing()) _trackInterfaces[i].signal.processBuffer(buffer, dspTime, channels);
     }
-    SetArrayToSingleValue(buffer, buffer.Length, 0);
+    SoundStageNative.SetArrayToSingleValue(buffer, buffer.Length, 0);
   }
 
   public override InstrumentData GetData() {

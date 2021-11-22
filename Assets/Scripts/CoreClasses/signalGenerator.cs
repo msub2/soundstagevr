@@ -63,7 +63,7 @@ public class signalGenerator : MonoBehaviour
 
     public virtual void processBuffer(float[] buffer, double dspTime, int channels)
     {
-
+        Debug.Log("Signal generator processing buffer");
     }
 
     public virtual float[] getBuffer(double dspTime, int channels, int bufferLength, bool modFreq = false, float requestedFreq = 440f, float detuneAmount = 0)

@@ -46,14 +46,14 @@ public class filterSignalGenerator : signalGenerator {
         pass
     };
 
-    [DllImport("SoundStageNative")]
-    public static extern void SetArrayToSingleValue(float[] a, int length, float val);
-    [DllImport("SoundStageNative")]
-    public static extern void CopyArray(float[] a, float[] b, int length);
-    [DllImport("SoundStageNative")]
-    public static extern void AddArrays(float[] a, float[] b, int length);
-    [DllImport("SoundStageNative")]
-    public static extern void processStereoFilter(float[] buffer, int length, ref mfValues mfA, ref mfValues mfB);
+    //[DllImport("__Internal")]
+    //public static extern void SetArrayToSingleValue(float[] a, int length, float val);
+    //[DllImport("__Internal")]
+    //public static extern void CopyArray(float[] a, float[] b, int length);
+    //[DllImport("__Internal")]
+    //public static extern void AddArrays(float[] a, float[] b, int length);
+    //[DllImport("__Internal")]
+    //public static extern void processStereoFilter(float[] buffer, int length, ref mfValues mfA, ref mfValues mfB);
 
     public filterType curType = filterType.none;
 
@@ -175,7 +175,7 @@ public class filterSignalGenerator : signalGenerator {
     private void OnAudioFilterRead(float[] buffer, int channels)
     {        
         if (incoming == null || bufferCopy == null) return;
-        CopyArray(bufferCopy,buffer, buffer.Length);
+        SoundStageNative.CopyArray(bufferCopy,buffer, buffer.Length);
     }
     
     public override void processBuffer(float[] buffer, double dspTime, int channels)
@@ -195,8 +195,8 @@ public class filterSignalGenerator : signalGenerator {
         // if silent, 0 out and return
         if (!incoming || curType == filterType.none)
         {
-            SetArrayToSingleValue(buffer, buffer.Length, 0.0f);
-            SetArrayToSingleValue(bufferCopy, bufferCopy.Length, 0.0f);
+            SoundStageNative.SetArrayToSingleValue(buffer, buffer.Length, 0.0f);
+            SoundStageNative.SetArrayToSingleValue(bufferCopy, bufferCopy.Length, 0.0f);
             return;            
         }
 
@@ -205,31 +205,31 @@ public class filterSignalGenerator : signalGenerator {
         // if pass through, just end
         if (curType == filterType.pass)
         {
-            CopyArray(buffer, bufferCopy,buffer.Length);
+            SoundStageNative.CopyArray(buffer, bufferCopy,buffer.Length);
             return;
         }
 
         if (curType != filterType.Notch && curType != filterType.BP)
         {
-            processStereoFilter(buffer, buffer.Length, ref filters[0].mf, ref filters[1].mf);
+            SoundStageNative.processStereoFilter(buffer, buffer.Length, ref filters[0].mf, ref filters[1].mf);
         }
         else if (curType == filterType.Notch)
         {
-            CopyArray(buffer, bufferCopy, buffer.Length);
+            SoundStageNative.CopyArray(buffer, bufferCopy, buffer.Length);
 
-            processStereoFilter(buffer, buffer.Length, ref filters[0].mf, ref filters[1].mf);
-            processStereoFilter(bufferCopy, bufferCopy.Length, ref filters[2].mf, ref filters[3].mf);
+            SoundStageNative.processStereoFilter(buffer, buffer.Length, ref filters[0].mf, ref filters[1].mf);
+            SoundStageNative.processStereoFilter(bufferCopy, bufferCopy.Length, ref filters[2].mf, ref filters[3].mf);
 
-            AddArrays(buffer, bufferCopy, buffer.Length);
+            SoundStageNative.AddArrays(buffer, bufferCopy, buffer.Length);
         }
 
         else if (curType == filterType.BP)
         {
-            processStereoFilter(buffer, buffer.Length, ref filters[0].mf, ref filters[1].mf);
-            processStereoFilter(buffer, buffer.Length, ref filters[2].mf, ref filters[3].mf);
+            SoundStageNative.processStereoFilter(buffer, buffer.Length, ref filters[0].mf, ref filters[1].mf);
+            SoundStageNative.processStereoFilter(buffer, buffer.Length, ref filters[2].mf, ref filters[3].mf);
         }
-        
-        CopyArray(buffer, bufferCopy, buffer.Length);
+
+        SoundStageNative.CopyArray(buffer, bufferCopy, buffer.Length);
     }
 }
 
@@ -245,7 +245,7 @@ class MonoFilter
     public float frequency = .5f;
     public float resonance = .5f;
     
-    public mfValues mf = new mfValues();
+    public SoundStageNative.FilterData mf = new SoundStageNative.FilterData();
     float t1, t2; 
     public MonoFilter(float fre, float r)
     {

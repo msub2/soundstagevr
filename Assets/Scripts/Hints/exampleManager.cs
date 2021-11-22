@@ -62,23 +62,7 @@ public class exampleManager : MonoBehaviour {
   }
 
   void Start() {
-#if UNITY_ANDROID
-        //if Examples doesn't exist, extract default data...
-        if (Directory.Exists(Directory.GetParent(Application.persistentDataPath).FullName + Path.DirectorySeparatorChar + "Examples") == false)
-        {
-            Directory.CreateDirectory(Directory.GetParent(Application.persistentDataPath).FullName + Path.DirectorySeparatorChar + "Examples");
-            //copy tgz to directory where we can extract it
-            WWW www = new WWW(Application.streamingAssetsPath + Path.DirectorySeparatorChar + "Examples.tgz");
-            while (!www.isDone) { }
-            System.IO.File.WriteAllBytes(Directory.GetParent(Application.persistentDataPath).FullName + Path.DirectorySeparatorChar + "Examples.tgz", www.bytes);
-            //extract it
-            Utility_SharpZipCommands.ExtractTGZ(Directory.GetParent(Application.persistentDataPath).FullName + Path.DirectorySeparatorChar + "Examples.tgz", Directory.GetParent(Application.persistentDataPath).FullName + Path.DirectorySeparatorChar + "Examples");
-            //delete tgz
-            File.Delete(Directory.GetParent(Application.persistentDataPath).FullName + Path.DirectorySeparatorChar + "Examples.tgz");
-        }
-#endif
-
-        GameObject g = Instantiate(vidplayerPrefab, transform, false) as GameObject;
+    GameObject g = Instantiate(vidplayerPrefab, transform, false) as GameObject;
     g.transform.localPosition = Vector3.zero;
     g.transform.localRotation = Quaternion.Euler(0, 180, 0);
 
@@ -87,7 +71,7 @@ public class exampleManager : MonoBehaviour {
   }
 
   void InitSides() {
-    height = Mathf.Clamp(Camera.main.transform.position.y, 1, 2);
+    //height = Mathf.Clamp(Camera.main.transform.position.y, 1, 2);
     float mag = .5f;
     bounds = new Vector3[4];
     bounds[0] = Vector3.forward * mag;
@@ -114,7 +98,7 @@ public class exampleManager : MonoBehaviour {
   }
 
   void firstLoad() {
-        SaveLoadInterface.instance.Load(System.IO.Directory.GetParent(Application.persistentDataPath).FullName + System.IO.Path.DirectorySeparatorChar + "examples" + System.IO.Path.DirectorySeparatorChar + "startExample.xml", true);
+    SaveLoadInterface.instance.Load(Directory.GetParent(Application.persistentDataPath).FullName + Path.DirectorySeparatorChar + "examples" + Path.DirectorySeparatorChar + "startExample.xml", true);
 
     GameObject exampleParent = new GameObject("exampleParent");
     exampleParent.transform.position = new Vector3(-.5f, .5f, 0);
@@ -171,7 +155,7 @@ public class exampleManager : MonoBehaviour {
     GameObject prevParent = GameObject.Find("exampleParent");
     if (prevParent != null) Destroy(prevParent);
 
-    SaveLoadInterface.instance.Load(System.IO.Directory.GetParent(Application.persistentDataPath).FullName + System.IO.Path.DirectorySeparatorChar + "examples" + System.IO.Path.DirectorySeparatorChar + s + ".xml", true);
+    SaveLoadInterface.instance.Load(Directory.GetParent(Application.persistentDataPath).FullName + Path.DirectorySeparatorChar + "examples" + Path.DirectorySeparatorChar + s + ".xml", true);
 
     Vector3 avg = Vector3.zero;
     int objectCount = 0;
@@ -279,6 +263,6 @@ public class exampleManager : MonoBehaviour {
   }
 
   void Update() {
-    height = Mathf.Lerp(height, Mathf.Clamp(Camera.main.transform.position.y, 1, 2), .03f);
+    //height = Mathf.Lerp(height, Mathf.Clamp(Camera.main.transform.position.y, 1, 2), .03f);
   }
 }

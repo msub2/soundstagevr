@@ -29,9 +29,9 @@ public class waveViz : MonoBehaviour {
   public Color32 waveBG = Color.black;
   public Color32 waveLine = Color.white;
 
-  [DllImport("SoundStageNative")]
-  public static extern void ProcessWaveTexture(float[] buffer, int length, System.IntPtr pixels, byte Ra, byte Ga, byte Ba, byte Rb, byte Gb, byte Bb,
-    int period, int waveheight, int wavewidth, ref int lastWaveH, ref int curWaveW);
+  //[DllImport("__Internal")]
+  //public static extern void ProcessWaveTexture(float[] buffer, int length, System.IntPtr pixels, byte Ra, byte Ga, byte Ba, byte Rb, byte Gb, byte Bb,
+  //  int period, int waveheight, int wavewidth, ref int lastWaveH, ref int curWaveW);
 
   List<float> bufferDrawList;
 
@@ -61,8 +61,8 @@ public class waveViz : MonoBehaviour {
     waverend.material.mainTexture = tex;
   }
 
-  public void UpdateViz(float[] buffer) {
-    ProcessWaveTexture(buffer, buffer.Length, m_WavePixelsHandle.AddrOfPinnedObject(), waveLine.r, waveLine.g, waveLine.b, waveBG.r, waveBG.g, waveBG.b, period, waveheight, wavewidth, ref lastWaveH, ref curWaveW);
+  public unsafe void UpdateViz(float[] buffer) {
+    SoundStageNative.ProcessWaveTexture(buffer, buffer.Length, (void*)m_WavePixelsHandle.AddrOfPinnedObject(), waveLine.r, waveLine.g, waveLine.b, waveBG.r, waveBG.g, waveBG.b, period, waveheight, wavewidth, ref lastWaveH, ref curWaveW);
   }
 
   void Update() {

@@ -143,7 +143,7 @@ public class libraryPanel : UIpanel {
 
 
   IEnumerator streamRoutine(string f) {
-    AudioClip c = RuntimeAudioClipLoader.Manager.Load(f, false, true, false);
+    /*AudioClip c = RuntimeAudioClipLoader.Manager.Load(f, false, true, false);
 
     loaderObject = Instantiate(loadingPrefab, transform, false) as GameObject;
     loaderObject.transform.localPosition = new Vector3(-.03f, -.037f, .01f);
@@ -154,7 +154,8 @@ public class libraryPanel : UIpanel {
       yield return null;
     }
     if (loaderObject != null) Destroy(loaderObject);
-    _panelRing.GetComponent<AudioSource>().PlayOneShot(c, .25f);
+    _panelRing.GetComponent<AudioSource>().PlayOneShot(c, .25f);*/
+    yield return null;
   }
 
   public override void selectEvent(bool on) {
