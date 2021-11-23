@@ -1,6 +1,6 @@
 The original project is no longer actively developed or maintained.
 
-This is a port of the original project to an updated Unity, SteamVR and Oculus Engines to get it to running on an Oculus Quest.
+This is a port of the original project to run in WebXR.
 
 # SoundStage VR
 SoundStage VR is a virtual reality music sandbox built specifically for room-scale VR. Whether you’re a professional DJ creating a new sound, or a hobbyist who wants to rock out on virtual drums, SoundStage gives you a diverse toolset to express yourself.
